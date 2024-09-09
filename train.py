@@ -1,7 +1,6 @@
 import json
 import numpy as np
-from sklearn.discriminant_analysis import StandardScaler
-from sklearn.model_selection import GridSearchCV, cross_val_score
+from sklearn.model_selection import GridSearchCV
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import MinMaxScaler
 
@@ -36,9 +35,3 @@ grid_search = GridSearchCV(MLPRegressor(max_iter=10), param_grid, cv=5, scoring=
 grid_search.fit(X_vectors, Y_vectors.ravel())
 print("Best parameters found: ", grid_search.best_params_)
 print("Best score found: ", -grid_search.best_score_)
-
-# $ python train.py 
-# Input features shape: (7842, 64)
-# Target values shape: (7842, 1)
-# Best parameters found:  {'activation': 'relu', 'alpha': 0.01, 'hidden_layer_sizes': (128, 128, 128, 128, 128), 'learning_rate': 'adaptive', 'solver': 'adam'}
-# Best score found:  0.0008024713478100695
