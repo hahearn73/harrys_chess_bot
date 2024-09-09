@@ -1,34 +1,35 @@
 import json
 import chess
+import numpy as np
 
 RAW_DATA_FILE = './dataset/lichess_db_eval.jsonl'
 
 lines = []
 with open(RAW_DATA_FILE, 'r') as f:
-    for i in range(1_000_000):
+    for i in range(100_000):
         lines.append(f.readline())
 
-with open('dataset/raw_1_000_000.jsonl', 'w') as f:
+with open('dataset/raw_100_000.jsonl', 'w') as f:
     f.writelines(lines)
 
 normalized_lines = [] # {"fen": fen, "eval": eval}
 for line in lines:
     json_line = json.loads(line)
     normalized_line = {"fen": json_line["fen"], "eval": None}
-    average_eval = 0.0
     mate_flag = False
     for eval in json_line['evals']:
+        evals = []
         for pv in eval['pvs']:
             if 'mate' in pv:
-                mate_flag = True
+                mate_flag = True # TODO: figure out how to include mates
             else:
-                average_eval += pv['cp']
-    average_eval /= len(json_line['evals'])
-    normalized_line['eval'] = average_eval
+                evals.append(pv['cp'])
     if not mate_flag:
+        average_eval = np.average(evals)
+        normalized_line['eval'] = average_eval
         normalized_lines.append(normalized_line)
 
-with open('dataset/normalized_1_000_000.jsonl', 'w') as f:
+with open('dataset/normalized_100_000.jsonl', 'w') as f:
     for line in normalized_lines:
         f.write(json.dumps(line) + '\n')
 
@@ -63,6 +64,6 @@ for line in normalized_lines:
     line['vectors'] = vectors
     del line['fen']
 
-with open('dataset/vectorized_1_000_000.jsonl', 'w') as f:
+with open('dataset/vectorized_100_000.jsonl', 'w') as f:
     for line in normalized_lines:
         f.write(json.dumps(line) + '\n')
